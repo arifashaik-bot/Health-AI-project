@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Personal Health Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Personal Health Assistant</h1>
+        <p class="subtitle">Ask your health questions and get supportive guidance. This AI is not a substitute for professional medical advice.</p>
+
+        <!-- Health category selector -->
+        <div class="category-selector">
+            <label for="category">Choose a health category:</label>
+            <select id="category">
+                {% for key, desc in categories.items() %}
+                <option value="{{ key }}">{{ key.capitalize() }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Chat box -->
+        <div class="chat-box" id="chat-box">
+            <!-- Messages will be injected here via JS -->
+        </div>
+
+        <!-- Input form -->
+        <form id="chat-form" class="input-form">
+            <input type="text" id="user-input" placeholder="Type your health question..." required>
+            <button type="submit">Ask</button>
+        </form>
+
+        <button id="clear-btn" class="clear-btn">Clear Chat</button>
+
+        <footer>
+            &copy; 2026 AI Health Assistant | Not a medical diagnosis
+        </footer>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const form = document.getElementById("chat-form");
+        const userInput = document.getElementById("user-input");
+        const categorySelect = document.getElementById("category");
+        const clearBtn = document.getElementById("clear-btn");
+
+        async function sendMessage(message) {
+            const category = categorySelect.value;
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message, category })
+            });
+            const data = await response.json();
+            return data.response || "No response";
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement("div");
+            div.classList.add("chat", sender);
+            div.textContent = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, "user");
+            userInput.value = "";
+
+            addMessage("AI is typing...", "ai"); // temporary placeholder
+            const aiDiv = chatBox.querySelector(".chat.ai:last-child");
+
+            try {
+                const aiResponse = await sendMessage(message);
+                aiDiv.textContent = aiResponse;
+            } catch (err) {
+                aiDiv.textContent = "Error: Could not get AI response";
+            }
+        });
+
+        clearBtn.addEventListener("click", async () => {
+            await fetch("/clear_history", { method: "POST" });
+            chatBox.innerHTML = "";
+        });
+    </script>
+</body>
+</html>
