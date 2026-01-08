@@ -11,7 +11,7 @@ app.secret_key = os.urandom(24)
 CORS(app)
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyAtyxzl_qRYn456665jR2SRwgb2VhvfGDc")
+genai.configure(api_key="GOOGLE_API_KEY")
 
 model = genai.GenerativeModel("gemini-2.5-flash")
 
@@ -222,3 +222,4 @@ def extract_profile_info(message):
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
