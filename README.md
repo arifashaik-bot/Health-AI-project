@@ -8,10 +8,7 @@ A **web-based AI Personal Health Assistant** that provides friendly, evidence-ba
 
 - **Chat Interface**: Conversational AI assistant with user-friendly chat bubbles.  
 - **Health Categories**: General, Nutrition, Fitness, Mental, Symptoms, Chronic, Sleep, Emergency.  
-- **Symptom Analysis**: Analyze user-reported symptoms and provide guidance.  
-- **Personal Profile**: Maintain user details like age, gender, weight, height, conditions, allergies, and medications.  
-- **Actionable Health Tips**: Provides tips and advice in a clear, structured format.  
-- **Session History**: Keeps track of past conversations.  
+- **Symptom Analysis**: Analyze user-reported symptoms and provide guidance.    
 - **Clear Chat Option**: Reset chat history with one click.  
 - **Responsive Design**: Mobile and desktop-friendly interface.  
 - **Safety Disclaimer**: Reminds users this is AI guidance, not a substitute for professional medical advice.  
