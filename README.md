@@ -25,6 +25,12 @@ A **web-based AI Personal Health Assistant** that provides friendly, evidence-ba
 
 ---
 
+## 🌐 Live Demo
+
+Check out the live version of the AI Personal Health Assistant here: (https://c-users-shaik-arifa-onedrive-deskto.vercel.app/)
+
+---
+
 ## 🚀 Setup and Usage
 
 Clone the repository and navigate into the project folder:
