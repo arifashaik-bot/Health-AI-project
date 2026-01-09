@@ -18,7 +18,7 @@ CORS(app)
 api_key = os.environ.get("GOOGLE_API_KEY")
 if not api_key:
     # Fallback for local development if .env is missing but we know the key from context
-    api_key = "AIzaSyAtyxzl_qRYn456665jR2SRwgb2VhvfGDc"
+    api_key = "GOOGLE_API_KEY"
 
 genai.configure(api_key=api_key)
 
@@ -314,3 +314,4 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
     app.run(host='0.0.0.0', port=port, debug=debug)
+
