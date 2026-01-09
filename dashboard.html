@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthAI - Your Personal Health Companion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="top-header">
+        <div class="header-container">
+            <div class="logo" onclick="showSection('dashboard')">
+                <i class="fas fa-heartbeat"></i> <span>HealthAI</span>
+            </div>
+            <nav class="top-nav">
+                <a href="/" class="nav-item" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+                <div class="nav-item active" data-section="dashboard" onclick="showSection('dashboard')">
+                    <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-section="chat" onclick="showSection('chat')">
+                    <i class="fas fa-comments"></i> <span>Health Chat</span>
+                </div>
+                <div class="nav-item" data-section="tools" onclick="showSection('tools')">
+                    <i class="fas fa-calculator"></i> <span>Health Tools</span>
+                </div>
+                <div class="nav-item" data-section="profile" onclick="showSection('profile')">
+                    <i class="fas fa-user-circle"></i> <span>My Profile</span>
+                </div>
+            </nav>
+            <div class="header-actions">
+                <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                <div class="user-avatar" onclick="showSection('profile')">
+                    <img src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff" alt="User">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section">
+                <div class="section-header">
+                    <h1>Welcome back, <span id="display-name">Healthy User</span>!</h1>
+                    <p class="subtitle">Here's your health summary for today.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon water"><i class="fas fa-tint"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Water Goal</span>
+                            <span class="stat-value"><span id="water-current">0</span> / <span id="water-goal">2.5</span>L</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon steps"><i class="fas fa-shoe-prints"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Daily Steps</span>
+                            <span class="stat-value">4,230 / 8k</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar" style="width: 52%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bmi"><i class="fas fa-weight"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Current BMI</span>
+                            <span class="stat-value" id="dash-bmi">--</span>
+                        </div>
+                        <div class="stat-tag" id="dash-bmi-tag">No data</div>
+                    </div>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="card health-tip-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-lightbulb"></i> Daily Health Tip</h3>
+                            <button class="text-btn" onclick="getHealthTips('general')"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                        <div id="daily-tip" class="tip-content">Loading tip...</div>
+                    </div>
+                    
+                    <div class="card quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="showSection('chat')">
+                                <i class="fas fa-comment-medical"></i>
+                                <span>Ask Health AI</span>
+                            </button>
+                            <button class="action-btn" onclick="showSection('tools')">
+                                <i class="fas fa-calculator"></i>
+                                <span>Check BMI</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card symptom-checker">
+                    <div class="card-header">
+                        <h3><i class="fas fa-stethoscope"></i> Quick Symptom Analysis</h3>
+                    </div>
+                    <p>Describe your symptoms briefly for AI-powered insights.</p>
+                    <div class="search-box">
+                        <input type="text" id="symptom-input" placeholder="e.g., persistent cough and mild fever...">
+                        <button onclick="analyzeSymptoms()">Analyze <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <div id="symptom-result" class="result-box hidden animate-fade"></div>
+                </div>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="chat-section" class="content-section hidden">
+                <div class="chat-layout">
+                    <aside class="chat-sidebar">
+                        <h3>Conversations</h3>
+                        <div class="category-list">
+                            {% for key in categories %}
+                            <div class="cat-item {% if loop.first %}active{% endif %}" onclick="selectCategory('{{ key }}', this)">
+                                <i class="fas fa-circle"></i>
+                                <span>{{ key|capitalize }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button id="clear-btn" class="secondary-btn"><i class="fas fa-trash-alt"></i> Clear History</button>
+                    </aside>
+                    <div class="chat-main">
+                        <div class="chat-header">
+                            <h2 id="current-chat-title">General Health Chat</h2>
+                            <p id="chat-desc">AI-powered wellness advice</p>
+                        </div>
+                        <div class="chat-box" id="chat-box">
+                            <div class="chat ai">
+                                <div class="message-bubble">
+                                    Hello! I'm your AI health assistant. How can I help you today?
+                                </div>
+                            </div>
+                        </div>
+                        <form id="chat-form" class="input-form">
+                            <input type="text" id="user-input" placeholder="Ask anything about your health..." required>
+                            <button type="submit" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tools Section -->
+            <section id="tools-section" class="content-section hidden">
+                <div class="section-header">
+                    <h1>Health Calculators</h1>
+                    <p class="subtitle">Use our tools to track and manage your health metrics.</p>
+                </div>
+                <div class="tools-grid">
+                    <!-- BMI Calculator -->
+                    <div class="card tool-card">
+                        <div class="tool-icon bmi"><i class="fas fa-weight"></i></div>
+                        <h3>BMI Calculator</h3>
+                        <p>Calculate your Body Mass Index to see if you're in a healthy range.</p>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label>Weight (kg)</label>
+                                <input type="number" id="bmi-weight" placeholder="70">
+                            </div>
+                            <div class="input-wrapper">
+                                <label>Height (cm)</label>
+                                <input type="number" id="bmi-height" placeholder="175">
+                            </div>
+                            <button class="primary-btn full-width" onclick="calculateBMI()">Calculate</button>
+                        </div>
+                        <div id="bmi-result" class="result-box hidden"></div>
+                    </div>
+
+                    <!-- Water Intake -->
+                    <div class="card tool-card">
+                        <div class="tool-icon water"><i class="fas fa-tint"></i></div>
+                        <h3>Water Hydration Guide</h3>
+                        <p>Find out how much water you should drink daily based on your body.</p>
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <label>Your Weight (kg)</label>
+                                <input type="number" id="water-weight" placeholder="70">
+                            </div>
+                            <div class="input-wrapper">
+                                <label>Activity Level</label>
+                                <select id="activity-level">
+                                    <option value="sedentary">Sedentary (Low)</option>
+                                    <option value="moderate" selected>Moderate (Normal)</option>
+                                    <option value="active">Very Active (High)</option>
+                                </select>
+                            </div>
+                            <button class="primary-btn full-width" onclick="calculateWater()">Calculate Goal</button>
+                        </div>
+                        <div id="water-result" class="result-box hidden"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile-section" class="content-section hidden">
+                <div class="profile-layout">
+                    <div class="profile-main">
+                        <div class="card profile-card">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=128" alt="Profile">
+                                    <button class="edit-avatar"><i class="fas fa-camera"></i></button>
+                                </div>
+                                <div class="profile-info">
+                                    <h2 id="prof-display-name">Healthy User</h2>
+                                    <p id="prof-display-email">user@healthai.com</p>
+                                    <div class="profile-badges">
+                                        <span class="badge"><i class="fas fa-check-circle"></i> Verified</span>
+                                        <span class="badge premium"><i class="fas fa-crown"></i> Premium</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-user-edit"></i> Personal Information</h3>
+                            <form id="profile-form" class="profile-form">
+                                <div class="form-grid">
+                                    <div class="input-wrapper">
+                                        <label>Full Name</label>
+                                        <input type="text" id="prof-name" placeholder="John Doe">
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <label>Email Address</label>
+                                        <input type="email" id="prof-email" placeholder="john@example.com">
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <label>Age</label>
+                                        <input type="number" id="prof-age">
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <label>Gender</label>
+                                        <select id="prof-gender">
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-wrapper mt-1">
+                                    <label>Medical Conditions (comma separated)</label>
+                                    <textarea id="prof-conditions" rows="2" placeholder="e.g. Hypertension, Asthma"></textarea>
+                                </div>
+                                
+                                <div class="input-wrapper mt-1">
+                                    <label>Allergies</label>
+                                    <textarea id="prof-allergies" rows="2" placeholder="e.g. Peanuts, Penicillin"></textarea>
+                                </div>
+
+                                <button type="submit" class="primary-btn mt-1">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <aside class="profile-sidebar">
+                        <div class="card goals-card">
+                            <h3><i class="fas fa-bullseye"></i> Health Goals</h3>
+                            <div class="goal-list">
+                                <div class="goal-item">
+                                    <input type="checkbox" checked>
+                                    <span>Drink 2.5L Water</span>
+                                </div>
+                                <div class="goal-item">
+                                    <input type="checkbox">
+                                    <span>8,000 Steps Daily</span>
+                                </div>
+                                <div class="goal-item">
+                                    <input type="checkbox" checked>
+                                    <span>7 Hours Sleep</span>
+                                </div>
+                                <div class="goal-item">
+                                    <input type="checkbox">
+                                    <span>30 min Exercise</span>
+                                </div>
+                            </div>
+                            <button class="text-btn">+ Add New Goal</button>
+                        </div>
+
+                        <div class="card metrics-card">
+                            <h3><i class="fas fa-chart-line"></i> Recent Activity</h3>
+                            <div class="activity-log">
+                                <div class="log-item">
+                                    <div class="log-icon"><i class="fas fa-calculator"></i></div>
+                                    <div class="log-details">
+                                        <p>BMI Calculated</p>
+                                        <span>Today, 10:30 AM</span>
+                                    </div>
+                                </div>
+                                <div class="log-item">
+                                    <div class="log-icon chat"><i class="fas fa-comments"></i></div>
+                                    <div class="log-details">
+                                        <p>AI Consultation</p>
+                                        <span>Yesterday, 4:15 PM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Navigation Logic
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(sectionId + '-section').classList.remove('hidden');
+            
+            document.querySelectorAll('.top-nav .nav-item').forEach(nav => nav.classList.remove('active'));
+            const activeNav = document.querySelector(`.top-nav .nav-item[data-section="${sectionId}"]`);
+            if(activeNav) activeNav.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0,0);
+        }
+
+        let currentCategory = 'general';
+        function selectCategory(cat, el) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('current-chat-title').innerText = cat.charAt(0).toUpperCase() + cat.slice(1) + ' Health Chat';
+        }
+
+        // Chat Logic
+        const chatBox = document.getElementById("chat-box");
+        const chatForm = document.getElementById("chat-form");
+        const userInput = document.getElementById("user-input");
+
+        chatForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const msg = userInput.value.trim();
+            if(!msg) return;
+
+            addMessage(msg, 'user');
+            userInput.value = '';
+
+            const loadingId = addMessage(`<div class="typing-indicator"><span></span><span></span><span></span></div>`, 'ai');
+            
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        message: msg,
+                        category: currentCategory
+                    })
+                });
+                const data = await res.json();
+                updateMessage(loadingId, data.response);
+            } catch (err) {
+                updateMessage(loadingId, "Sorry, I encountered an error. Please try again later.");
+            }
+        });
+
+        function addMessage(text, sender) {
+            const id = Date.now();
+            const div = document.createElement("div");
+            div.className = `chat ${sender}`;
+            div.id = `msg-${id}`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return id;
+        }
+
+        function updateMessage(id, text) {
+            const div = document.getElementById(`msg-${id}`);
+            if(div && text) {
+                const bubble = div.querySelector('.message-bubble');
+                const formattedText = text
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/### (.*?)(<br>|$)/g, '<h4>$1</h4>')
+                    .replace(/^- (.*?)(<br>|$)/gm, '<li>$1</li>');
+                
+                bubble.innerHTML = formattedText;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Tool Logics
+        async function calculateBMI() {
+            const weight = document.getElementById('bmi-weight').value;
+            const height = document.getElementById('bmi-height').value;
+            const resBox = document.getElementById('bmi-result');
+            
+            if(!weight || !height) return alert("Please enter both weight and height");
+
+            resBox.innerHTML = "Calculating...";
+            resBox.classList.remove('hidden');
+            
+            const res = await fetch('/calculate_bmi', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({weight, height})
+            });
+            const data = await res.json();
+            
+            resBox.innerHTML = `
+                <div class="result-highlight">
+                    <span class="label">BMI Score</span>
+                    <span class="value">${data.bmi}</span>
+                </div>
+                <div class="result-tag ${data.category.toLowerCase().replace(' ', '-')}">${data.category}</div>
+                <p class="rec-text">${data.recommendation}</p>
+            `;
+
+            // Update Dashboard
+            document.getElementById('dash-bmi').innerText = data.bmi;
+            const tag = document.getElementById('dash-bmi-tag');
+            tag.innerText = data.category;
+            tag.className = `stat-tag ${data.category.toLowerCase().replace(' ', '-')}`;
+        }
+
+        async function calculateWater() {
+            const weight = document.getElementById('water-weight').value;
+            const activity = document.getElementById('activity-level').value;
+            const resBox = document.getElementById('water-result');
+
+            if(!weight) return alert("Please enter your weight");
+
+            resBox.innerHTML = "Calculating...";
+            resBox.classList.remove('hidden');
+
+            const res = await fetch('/water_intake', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({weight, activity_level: activity})
+            });
+            const data = await res.json();
+
+            resBox.innerHTML = `
+                <div class="result-highlight">
+                    <span class="label">Daily Target</span>
+                    <span class="value">${data.recommended_liters} Liters</span>
+                </div>
+                <p class="rec-text">That's about ${data.recommended_glasses} glasses (250ml each) per day.</p>
+            `;
+
+            // Update Dashboard
+            document.getElementById('water-goal').innerText = data.recommended_liters;
+        }
+
+        async function analyzeSymptoms() {
+            const symptoms = document.getElementById('symptom-input').value;
+            const resBox = document.getElementById('symptom-result');
+            
+            if(!symptoms) return alert("Please describe your symptoms");
+
+            resBox.innerHTML = "Analyzing with HealthAI...";
+            resBox.classList.remove('hidden');
+
+            const res = await fetch('/analyze_symptoms', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({symptoms})
+            });
+            const data = await res.json();
+            resBox.innerHTML = data.analysis
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/### (.*?)(<br>|$)/g, '<h4>$1</h4>');
+        }
+
+        async function getHealthTips(cat) {
+            const tipBox = document.getElementById('daily-tip');
+            tipBox.innerHTML = "Finding a healthy tip for you...";
+            const res = await fetch(`/get_health_tips?category=${cat}`);
+            const data = await res.json();
+            tipBox.innerHTML = data.tips.replace(/\n/g, '<br>').replace(/^\d\.\s/gm, '• ');
+        }
+
+        // Profile Form
+        document.getElementById('profile-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('prof-name').value;
+            const email = document.getElementById('prof-email').value;
+            const age = document.getElementById('prof-age').value;
+            const gender = document.getElementById('prof-gender').value;
+            const conditions = document.getElementById('prof-conditions').value.split(',').map(s => s.trim());
+            const allergies = document.getElementById('prof-allergies').value.split(',').map(s => s.trim());
+
+            const res = await fetch('/save_profile', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, email, age, gender, conditions, allergies})
+            });
+            
+            if(res.ok) {
+                document.getElementById('display-name').innerText = name || "Healthy User";
+                document.getElementById('prof-display-name').innerText = name || "Healthy User";
+                document.getElementById('prof-display-email').innerText = email || "user@healthai.com";
+                alert("Profile updated successfully!");
+            }
+        };
+
+        // Initialize
+        window.onload = () => {
+            // Handle tab parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab === 'chat') showSection('chat');
+            else if (tab === 'tools') showSection('tools');
+            else if (tab === 'profile') showSection('profile');
+            else showSection('dashboard');
+
+            getHealthTips('general');
+            fetch('/get_user_profile').then(r => r.json()).then(data => {
+                if(data.age) document.getElementById('prof-age').value = data.age;
+                if(data.gender) document.getElementById('prof-gender').value = data.gender;
+                if(data.conditions) document.getElementById('prof-conditions').value = data.conditions.join(', ');
+                if(data.allergies) document.getElementById('prof-allergies').value = data.allergies.join(', ');
+                if(data.weight && data.height) {
+                    // Pre-fill tool inputs
+                    document.getElementById('bmi-weight').value = data.weight;
+                    document.getElementById('bmi-height').value = data.height;
+                    document.getElementById('water-weight').value = data.weight;
+                }
+            });
+        };
+
+        document.getElementById('clear-btn').onclick = async () => {
+            if(confirm("Clear all conversation history?")) {
+                await fetch('/clear_history', {method: 'POST'});
+                chatBox.innerHTML = '<div class="chat ai"><div class="message-bubble">History cleared. How can I help you?</div></div>';
+            }
+        };
+    </script>
+</body>
+</html>
