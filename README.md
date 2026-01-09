@@ -1,34 +1,53 @@
-# AI Personal Health Assistant
+# 🩺 AI Personal Health Assistant
 
-A **web-based AI Personal Health Assistant** that provides friendly, evidence-based health guidance across multiple categories such as general wellness, nutrition, fitness, mental health, symptoms, and more. Built with **Python**, **Flask**, and **Google Gemini API**, this assistant can interact with users, analyze symptoms, suggest tips, and maintain a personalized user profile.
+The **AI Personal Health Assistant** is a smart web application designed to provide friendly, personalized, and evidence-based health guidance. Users can chat with the AI assistant, track basic health information, analyze symptoms, receive wellness tips, and explore multiple health categories — all in one intuitive platform.
 
----
-
-## 🌟 Features
-
-- **Chat Interface**: Conversational AI assistant with user-friendly chat bubbles.  
-- **Health Categories**: General, Nutrition, Fitness, Mental, Symptoms, Chronic, Sleep, Emergency.  
-- **Symptom Analysis**: Analyze user-reported symptoms and provide guidance.    
-- **Clear Chat Option**: Reset chat history with one click.  
-- **Responsive Design**: Mobile and desktop-friendly interface.  
-- **Safety Disclaimer**: Reminds users this is AI guidance, not a substitute for professional medical advice.  
-
----
-
-## 🛠 Tech Stack
-
-- **Frontend**: HTML5, CSS3, JavaScript  
-- **Backend**: Python, Flask  
-- **AI**: Google Gemini API (`gemini-2.5-flash` model)  
-- **Session Management**: Flask session  
-- **CORS Support**: `flask-cors`  
+This project is built using **Python (Flask)** for the backend and integrates **Google Gemini AI** for generating intelligent responses. The frontend has been enhanced with attractive UI/UX for a more engaging experience.
 
 ---
 
 ## 🌐 Live Demo
 
-Check out the live version of the AI Personal Health Assistant here: (https://c-users-shaik-arifa-onedrive-deskto.vercel.app/)
+👉 Try the live app here:  
+**https://c-users-shaik-arifa-onedrive-deskto.vercel.app/**
 
+---
+
+## ✨ Key Features
+
+- 💬 **AI Chat Assistant** – interactive conversational support  
+- 🩻 **Symptom Analysis** – analyze symptoms and provide guidance  
+- 🍎 **Health Categories**
+  - General Health  
+  - Nutrition and Diet  
+  - Fitness and Exercise  
+  - Mental Health  
+  - Chronic Conditions  
+  - Sleep Health  
+  - Emergency Guidance  
+
+- 👤 **User Profile Support**
+  - Age, gender, height, weight  
+  - Allergies, conditions, medications  
+
+- 📝 **Conversation History** stored during session  
+- 🧠 **Actionable Health Tips** generated dynamically  
+- 🧹 **Clear Chat Option**  
+- 📱 **Responsive & Beautiful UI**  
+- ⚠️ **Built-in Medical Disclaimer**
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend:** HTML5, CSS3, JavaScript  
+- **Backend:** Python, Flask  
+- **AI Model:** Google Gemini  
+- **API Integration:** `google-generativeai`  
+- **Styling:** Custom CSS (responsive, modern UI)  
+- **Session Handling:** Flask session  
+- **CORS:** flask-cors
+  
 ---
 
 ## 🚀 Setup and Usage
