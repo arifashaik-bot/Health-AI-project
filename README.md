@@ -66,11 +66,19 @@ This project is built using **Python (Flask)** for the backend and integrates **
    ```bash
    pip install flask flask-cors google-generativeai
    ```
-### 4. Configure Google Gemini API Key
+4. **Configure Google Gemini API Key**:
 
 1. Get your **Google Gemini API key** from **Google AI Studio**.
 2. Open the `app.py` file in your project.
 3. Replace the API key line with your own key:
    ```bash
    genai.configure(api_key="YOUR_GEMINI_API_KEY")
-  ```  
+   ```  
+5. **Run the Flask Server**:
+   ```bash
+   python app.py
+   ```
+6. **Access the Application**:
+
+1. Open your browser and go to http://127.0.0.1:5000/
+
