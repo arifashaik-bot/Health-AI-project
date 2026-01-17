@@ -56,5 +56,21 @@ This project is built using **Python (Flask)** for the backend and integrates **
 1. **Clone the repository**:
    ```bash
    git clone <repository-url>
-   cd Hospital-predictive-system
+   cd Health-AI-project
    ```
+2. **Check Python Version**:
+   ```bash
+   python --version
+   ```   
+3. **Install Required Python Packages**:
+   ```bash
+   pip install flask flask-cors google-generativeai
+   ```
+### 4. Configure Google Gemini API Key
+
+1. Get your **Google Gemini API key** from **Google AI Studio**.
+2. Open the `app.py` file in your project.
+3. Replace the API key line with your own key:
+   ```bash
+   genai.configure(api_key="YOUR_GEMINI_API_KEY")
+  ```  
